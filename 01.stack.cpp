@@ -19,6 +19,7 @@ public:
             cout << "Stack Overflow\n";
             return;
         }
+
         arr[++top] = value;
     }
 
@@ -27,6 +28,7 @@ public:
             cout << "Stack Underflow\n";
             return -1;
         }
+
         return arr[top--];
     }
 
@@ -40,15 +42,26 @@ int evaluatePostfix(string exp) {
 
     for (char ch : exp) {
 
+        // If operand
         if (ch >= '0' && ch <= '9') {
             s.push(ch - '0');
         }
 
-        else {
+        // If operator
+        else if (ch == '+' || ch == '-' || ch == '*' ||
+                 ch == '/' || ch == '%') {
+
             int val2 = s.pop();
             int val1 = s.pop();
 
+            // Check for invalid expression
+            if (val1 == -1 || val2 == -1) {
+                cout << "Invalid Postfix Expression\n";
+                return -1;
+            }
+
             switch (ch) {
+
                 case '+':
                     s.push(val1 + val2);
                     break;
@@ -62,13 +75,26 @@ int evaluatePostfix(string exp) {
                     break;
 
                 case '/':
+                    if (val2 == 0) {
+                        cout << "Division by Zero\n";
+                        return -1;
+                    }
                     s.push(val1 / val2);
                     break;
 
                 case '%':
+                    if (val2 == 0) {
+                        cout << "Modulo by Zero\n";
+                        return -1;
+                    }
                     s.push(val1 % val2);
                     break;
             }
+        }
+
+        else {
+            cout << "Invalid Character: " << ch << endl;
+            return -1;
         }
     }
 
@@ -81,7 +107,11 @@ int main() {
     cout << "Enter Postfix Expression: ";
     cin >> postfix;
 
-    cout << "Result = " << evaluatePostfix(postfix);
+    int result = evaluatePostfix(postfix);
+
+    if (result != -1) {
+        cout << "Result = " << result << endl;
+    }
 
     return 0;
 }
