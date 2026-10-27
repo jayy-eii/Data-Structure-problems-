@@ -1,0 +1,350 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node
+{
+    int data;
+    struct Node *prev;
+    struct Node *next;
+};
+
+struct Node *head = NULL;
+
+/* INSERT AT BEGINNING */
+void insertBeginning(int value)
+{
+    struct Node *newNode;
+
+    newNode = (struct Node *)malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+    {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    newNode->data = value;
+    newNode->prev = NULL;
+    newNode->next = head;
+
+    if (head != NULL)
+        head->prev = newNode;
+
+    head = newNode;
+}
+
+/* INSERT AT END */
+void insertEnd(int value)
+{
+    struct Node *newNode;
+    struct Node *temp;
+
+    newNode = (struct Node *)malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+    {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    newNode->data = value;
+    newNode->next = NULL;
+
+    if (head == NULL)
+    {
+        newNode->prev = NULL;
+        head = newNode;
+        return;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL)
+    {
+        temp = temp->next;
+    }
+
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+/* INSERT AT MIDDLE */
+void insertMiddle(int value, int position)
+{
+    struct Node *newNode;
+    struct Node *temp;
+    int i;
+
+    if (position <= 1)
+    {
+        insertBeginning(value);
+        return;
+    }
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    temp = head;
+
+    for (i = 1; i < position - 1; i++)
+    {
+        if (temp->next == NULL)
+        {
+            printf("Invalid position!\n");
+            return;
+        }
+
+        temp = temp->next;
+    }
+
+    newNode = (struct Node *)malloc(sizeof(struct Node));
+
+    if (newNode == NULL)
+    {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    newNode->data = value;
+    newNode->prev = temp;
+    newNode->next = temp->next;
+
+    if (temp->next != NULL)
+        temp->next->prev = newNode;
+
+    temp->next = newNode;
+}
+
+/* DELETE FROM BEGINNING */
+void deleteBeginning()
+{
+    struct Node *temp;
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    temp = head;
+    head = head->next;
+
+    if (head != NULL)
+        head->prev = NULL;
+
+    free(temp);
+}
+
+/* DELETE FROM END */
+void deleteEnd()
+{
+    struct Node *temp;
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL)
+    {
+        temp = temp->next;
+    }
+
+    if (temp->prev == NULL)
+    {
+        head = NULL;
+    }
+    else
+    {
+        temp->prev->next = NULL;
+    }
+
+    free(temp);
+}
+
+/* DELETE FROM MIDDLE */
+void deleteMiddle(int position)
+{
+    struct Node *temp;
+    int i;
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    if (position <= 1)
+    {
+        deleteBeginning();
+        return;
+    }
+
+    temp = head;
+
+    for (i = 1; i < position; i++)
+    {
+        if (temp == NULL)
+        {
+            printf("Invalid position!\n");
+            return;
+        }
+
+        temp = temp->next;
+    }
+
+    if (temp == NULL)
+    {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    temp->prev->next = temp->next;
+
+    if (temp->next != NULL)
+        temp->next->prev = temp->prev;
+
+    free(temp);
+}
+
+/* DISPLAY FORWARD */
+void displayForward()
+{
+    struct Node *temp;
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    temp = head;
+
+    printf("Forward: ");
+
+    while (temp != NULL)
+    {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+
+    printf("NULL\n");
+}
+
+/* DISPLAY BACKWARD */
+void displayBackward()
+{
+    struct Node *temp;
+
+    if (head == NULL)
+    {
+        printf("List is empty!\n");
+        return;
+    }
+
+    temp = head;
+
+    while (temp->next != NULL)
+    {
+        temp = temp->next;
+    }
+
+    printf("Backward: ");
+
+    while (temp != NULL)
+    {
+        printf("%d <-> ", temp->data);
+        temp = temp->prev;
+    }
+
+    printf("NULL\n");
+}
+
+/* MAIN */
+int main()
+{
+    int choice;
+    int value;
+    int position;
+
+    while (1)
+    {
+        printf("\n===== DOUBLY LINKED LIST =====\n");
+        printf("1. Insert at Beginning\n");
+        printf("2. Insert at Middle\n");
+        printf("3. Insert at End\n");
+        printf("4. Delete from Beginning\n");
+        printf("5. Delete from Middle\n");
+        printf("6. Delete from End\n");
+        printf("7. Display Forward\n");
+        printf("8. Display Backward\n");
+        printf("9. Exit\n");
+
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 9)
+        {
+            printf("Program terminated.\n");
+            break;
+        }
+
+        switch (choice)
+        {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                insertBeginning(value);
+                break;
+
+            case 2:
+                printf("Enter value: ");
+                scanf("%d", &value);
+
+                printf("Enter position: ");
+                scanf("%d", &position);
+
+                insertMiddle(value, position);
+                break;
+
+            case 3:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                insertEnd(value);
+                break;
+
+            case 4:
+                deleteBeginning();
+                break;
+
+            case 5:
+                printf("Enter position: ");
+                scanf("%d", &position);
+                deleteMiddle(position);
+                break;
+
+            case 6:
+                deleteEnd();
+                break;
+
+            case 7:
+                displayForward();
+                break;
+
+            case 8:
+                displayBackward();
+                break;
+
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
